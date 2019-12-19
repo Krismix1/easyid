@@ -42,7 +42,7 @@ def account():
         }
 
     return {
-        'data': f'You have {db[email]["amount"]} DKK.',
+        'message': f'You have {db[email]["amount"]} DKK in your account.',
         'status': 0
     }
 

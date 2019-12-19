@@ -29,6 +29,4 @@ module.exports = (privateKey, options = {}) => (req, res) => {
       status: 1
     })
   }
-
-
 }

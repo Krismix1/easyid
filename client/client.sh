@@ -1,17 +1,19 @@
 #!/usr/bin/env bash
 
-
 response=$(curl -s \
       -H "Content-Type: application/json" \
-      --data '{"email":"a@a.com","password":"1"}' \
+      -d '{"email":"a@a.com","password":"1"}' \
       localhost:42069/auth)
-status=$(echo $response| jq -r .status)
-token=$(echo $response| jq -r .token)
+
+status=$(echo $response | jq -r .status)
+token=$(echo $response | jq -r .token)
+
+auth="Authorization: $token"
 if [ $status = "0" ]; then
-  curl -H "Authorization: $token" localhost:5051/loans
-  curl -H "Authorization: $token" localhost:5000/accounts
+  curl -s -H "$auth" localhost:5051/loans | jq -r ".message"
+  curl -s -H "$auth" localhost:5000/accounts | jq -r ".message"
 else
-  echo "The request failed"
+  echo "The authentication request failed"
   echo $response
   exit 1
 fi
