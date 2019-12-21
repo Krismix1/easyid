@@ -1,10 +1,10 @@
 import { SignOptions, sign } from 'jsonwebtoken'
 
 const users: {
-  [email: string]: { password: string}
+  [email: string]: { password: string }
 } = {
-  'a@a.com': { 'password': '1' },
-  'b@a.com': { 'password': '2' }
+  'a@a.com': { password: '1' },
+  'b@a.com': { password: '2' },
 }
 const defaultOptions: SignOptions = { algorithm: 'RS256' }
 
@@ -17,10 +17,10 @@ export class AuthService {
     this.options = options
   }
 
-  login (username: string, password: string): Promise<string> {
+  login(username: string, password: string): Promise<string> {
     const mixedOptions: SignOptions = { ...defaultOptions, ...this.options }
 
-    if(users[username] && users[username].password === password) {
+    if (users[username] && users[username].password === password) {
       return new Promise((resolve, reject) => {
         sign({ email: username }, this.key, mixedOptions, (err, token) => {
           if (err) {

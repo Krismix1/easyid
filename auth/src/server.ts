@@ -5,14 +5,17 @@ import * as fs from 'fs'
 import * as path from 'path'
 import { AuthService } from './services/auth-service'
 
-
 const privateKey = fs.readFileSync('jwtRS256.key')
 const authService = new AuthService(privateKey.toString())
-const jsonMimeResHandler = (req: Request, res: Response, next: NextFunction) => {
-    if (!res.getHeader('Content-Type')) {
-        res.set('Content-Type', 'application/json')
-    }
-    return next()
+const jsonMimeResHandler = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  if (!res.getHeader('Content-Type')) {
+    res.set('Content-Type', 'application/json')
+  }
+  return next()
 }
 
 const app = express()
@@ -34,14 +37,13 @@ const loginRequests: {
   [id: number]: LoginRequest
 } = {}
 
-
 app.post('/login-request', (req: Request, res: Response) => {
   // TODO: Would also be good to save which company created the request
   const { successUrl, cancelUrl } = req.body
   const id = Math.floor(Math.random() * 1000)
   loginRequests[id] = { successUrl, cancelUrl, error: false, data: null }
   const data = {
-    redirectUrl: `http://localhost:${port}/login?request-id=${id}`
+    redirectUrl: `http://localhost:${port}/login?request-id=${id}`,
   }
   return res.status(200).send(data)
 })
@@ -57,38 +59,46 @@ app.post('/login', (req: Request, res: Response) => {
   if (!loginRequests[requestId]) {
     return res.status(400).send({
       status: 1,
-      message: 'Request ID was not found'
+      message: 'Request ID was not found',
     })
   }
 
   if (!email || !password) {
     return res.status(400).send({
       message: 'Email or password not provided',
-      status: 1
+      status: 1,
     })
   }
 
-  return authService.login(email, password)
-    .then(token => {
-      const url = loginRequests[requestId].successUrl
-      delete loginRequests[requestId]
-      return `${url}?token=${token}`
-    })
-    .catch((error: Error) => {
-      console.log(error)
-      const url = loginRequests[requestId].cancelUrl
-      // update the information about the request so that the caller can fetch it
-      loginRequests[requestId] = {
-        ...loginRequests[requestId],
-        error: true,
-        data: {
-          error
+  return (
+    authService
+      .login(email, password)
+      .then(token => {
+        const url = loginRequests[requestId].successUrl
+        delete loginRequests[requestId]
+        return `${url}?token=${token}`
+      })
+      .catch((error: Error) => {
+        console.log(error)
+        const url = loginRequests[requestId].cancelUrl
+        // update the information about the request so that the caller can fetch it
+        loginRequests[requestId] = {
+          ...loginRequests[requestId],
+          error: true,
+          data: {
+            error,
+          },
         }
-      }
-      return `${url}?request-id=${requestId}`
-    })
-    // a hackish way to redirect the browser
-    .then(url => res.status(301).set('Location', url).send())
+        return `${url}?request-id=${requestId}`
+      })
+      // a hackish way to redirect the browser
+      .then(url =>
+        res
+          .status(301)
+          .set('Location', url)
+          .send()
+      )
+  )
 })
 
 app.listen(port, err => {
