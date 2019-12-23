@@ -2,10 +2,10 @@
   "name": "easyid-1",
   "version": "1.0.0",
   "description": "",
-  "main": "./src/server.js",
+  "main": "./build/src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon ./build/server.js",
+    "dev": "nodemon ./build/src/index.js",
     "compile:w": "npx tsc -w -p .",
     "check": "gts check",
     "clean": "gts clean",
