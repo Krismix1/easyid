@@ -20,9 +20,9 @@ export class LoginRequestController implements Controller {
   constructor(private authService: AuthService, private rootPath: string) {}
 
   initialize(router: Router): void {
-    router.post('/login-request', this.createLoginRequest)
+    router.post('/login-request', (req, res) => this.createLoginRequest(req, res))
     router.get(this.routePath, this.getLoginPage)
-    router.post(this.routePath, this.authorize)
+    router.post(this.routePath, (req, res) => this.authorize(req, res))
   }
 
   private createLoginRequest(req: Request, res: Response) {
@@ -61,7 +61,7 @@ export class LoginRequestController implements Controller {
       })
     }
 
-    if (!this.loginRequests[requestId].isError) {
+    if (this.loginRequests[requestId].isError) {
       return res.status(422).send({
         status: 1,
         message: 'Request already resulted in error'
