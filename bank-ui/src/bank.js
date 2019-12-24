@@ -6,10 +6,10 @@ const fs = require('fs')
 const path = require('path')
 
 const jsonMimeResHandler = (req, res, next) => {
-    if (!res.getHeader('Content-Type')) {
-        res.set('Content-Type', 'application/json')
-    }
-    return next()
+  if (!res.getHeader('Content-Type')) {
+    res.set('Content-Type', 'application/json')
+  }
+  return next()
 }
 
 const app = express()
@@ -20,7 +20,10 @@ const port = 9999
 
 app.get('/', (req, res) => {
   res.set('Content-Type', 'text/html')
-  return res.status(200).sendFile(path.join(__dirname, 'pages', 'index.html'))
+  return res
+    .status(200)
+    .set('Cache-Control', 'no-store')
+    .sendFile(path.join(__dirname, 'pages', 'index.html'))
 })
 
 app.get('/login', async (req, res) => {
@@ -33,7 +36,11 @@ app.get('/login', async (req, res) => {
     }
   }).then(res => res.data)
 
-  return res.status(301).set('Location', redirectUrl).send()
+  return res
+    .status(301)
+    .set('Location', redirectUrl)
+    .set('Cache-Control', 'no-store')
+    .send()
 })
 
 app.get('/success', async (req, res) => {
