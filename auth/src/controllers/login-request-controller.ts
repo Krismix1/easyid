@@ -20,9 +20,9 @@ export class LoginRequestController implements Controller {
   constructor(private authService: AuthService, private rootPath: string) {}
 
   initialize(router: Router): void {
-    router.post('/login-request', (req, res) => this.createLoginRequest(req, res))
-    router.get(this.routePath, this.getLoginPage)
-    router.post(this.routePath, (req, res) => this.authorize(req, res))
+    router.post('/login-request', this.createLoginRequest.bind(this))
+    router.get(this.routePath, this.getLoginPage.bind(this))
+    router.post(this.routePath, this.authorize.bind(this))
   }
 
   private createLoginRequest(req: Request, res: Response) {
@@ -31,7 +31,7 @@ export class LoginRequestController implements Controller {
     const id = Math.floor(Math.random() * 1000)
     this.loginRequests[id] = { successUrl, cancelUrl, isError: false, error: null }
     const data = {
-      redirectUrl: `${this.rootPath}/login?request-id=${id}`,
+      redirectUrl: `${this.rootPath}${this.routePath}?request-id=${id}`,
     }
     return res.status(200).send(data)
   }
