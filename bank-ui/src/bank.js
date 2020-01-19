@@ -1,8 +1,6 @@
 const express = require('express')
-// const bodyParser = require('body-parser')
 const axios = require('axios')
 
-const fs = require('fs')
 const path = require('path')
 
 const jsonMimeResHandler = (req, res, next) => {
@@ -13,9 +11,7 @@ const jsonMimeResHandler = (req, res, next) => {
 }
 
 const app = express()
-// app.use(bodyParser.json())
 app.use(jsonMimeResHandler)
-// app.use(bodyParser.urlencoded({ extended: true }))
 const port = 9999
 
 app.get('/', (req, res) => {
@@ -48,7 +44,7 @@ app.get('/success', async (req, res) => {
   const data = await axios({
     url: 'http://localhost:5000/accounts',
     headers: {
-      'Authorization': `${token}`
+      'Authorization': `Bearer ${token}`
     }
   }).then(res => res.data)
   res.set('Content-Type', 'text/html')
