@@ -2,15 +2,12 @@ import jwt
 import json
 from flask import request, Flask
 
-public_key = '/home/cristi/education/university/software-development/2nd-semester/system-integration/projects/easyid-1/auth/jwtRS256.key.pub'
+import repository
+
+public_key = 'jwtRS256.key.pub'
 
 with open(public_key, 'r') as f:
     public_key = f.read()
-
-db_path = 'accounts.json'
-db = {}
-with open(db_path) as f:
-    db = json.loads(f.read())
 
 app = Flask(__name__)
 
@@ -22,8 +19,13 @@ def account():
             'message': 'No authorization token',
             'status': 401
         }
+    if not auth_token.startswith('Bearer '):
+        return {
+            'message': 'Invalid Bearer token format',
+            'status': 401
+        }
     try:
-        decoded = jwt.decode(auth_token, public_key)
+        decoded = jwt.decode(auth_token.split()[-1], public_key)
     except jwt.exceptions.DecodeError as e:
         return {
             'message': f'Invalid token: {e}',
@@ -35,14 +37,15 @@ def account():
             'status': 500,
             'message': 'Email not provided'
         }
-    if not email in db:
+    if not repository.account_exists(email):
         return {
             'status': 400,
             'message': 'No user with this email'
         }
-
+    # Not really atomic... the account could've been deleted in the mean time
+    acc = repository.account_by_email(email)
     return {
-        'message': f'You have {db[email]["amount"]} DKK in your account.',
+        'message': f'You have {acc.amount} DKK in your account.',
         'status': 0
     }
 
