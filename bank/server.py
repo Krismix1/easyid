@@ -50,4 +50,7 @@ def account():
     }
 
 if __name__ == '__main__':
+    from models.account import database
+    with database.atomic():
+        pass
     app.run()
