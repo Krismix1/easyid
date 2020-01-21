@@ -6,11 +6,11 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-peewee = "==3.11.2"
-pymysql = "==0.9.3"
 cryptography = "*"
-pyjwt = "==1.7.1"
 flask = "*"
+pyjwt = "*"
+pymysql = "*"
+peewee = "*"
 
 [requires]
 python_version = "3.8"
